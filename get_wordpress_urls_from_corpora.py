@@ -13,13 +13,13 @@ from random import shuffle
 import string, codecs
 import HTMLParser, re
 import warnings
+from py_bing_search import PyBingWebSearch
 
 warnings.filterwarnings("ignore")
-execfile('bing_search_api.py')
 
-LANG = 'my'
+LANG = 'es' #for example, grab the spanish corpus
 
-my_key =  #THIS IS WHERE YOUR BING SEARCH API KEY GOES
+my_key = 'fake_key'  #THIS IS WHERE YOUR BING SEARCH API KEY GOES
 
 
 '''
@@ -35,10 +35,11 @@ for word in words:
         new_words.append(word)
 
 words = new_words
-print 'final:', len(words)
 '''
 
-words = map(lambda x:x.split(' ')[0], codecs.open('corpora_etc/'+LANG + '-words.txt', encoding='utf-8').readlines())
+words = map(lambda x:x.split(' ')[0], codecs.open('corpora/'+LANG + '-words.txt', encoding='utf-8').readlines())
+
+print 'using:', len(words), 'words'
 
 
 urls = set()
@@ -65,7 +66,6 @@ for word in words[0:500]:
         except ValueError:
             print 'error...:', bing.search('web',query_string,params)
             continue
-            
 
         print i, len(x['Web'])
         for res in x['Web']:
