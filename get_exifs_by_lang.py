@@ -12,14 +12,12 @@ import PIL, datetime
 import PIL.ExifTags, PIL.Image
 import warnings
 warnings.filterwarnings("ignore")
-
 socket.setdefaulttimeout(2)
 
  
 LANG = sys.argv[1]
 
 url_df = read_pickle('new_lang_wordpress_urls/'+LANG+'.dat')
-
 url_df = url_df[url_df.lang==LANG]
 
 if('visited' not in url_df.columns): url_df['visited'] = zeros(len(url_df))
