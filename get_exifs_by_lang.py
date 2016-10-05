@@ -14,7 +14,6 @@ import warnings
 warnings.filterwarnings("ignore")
 socket.setdefaulttimeout(2)
 
- 
 LANG = sys.argv[1]
 
 url_df = read_pickle('new_lang_wordpress_urls/'+LANG+'.dat')
@@ -36,7 +35,6 @@ for idx in url_df.index:
     site_gps_coords = DataFrame()
 
     for page in range(1,11):
-
         if((not site_has_images) and (page == 4)): break
 
         url = 'http://' + site_url.strip()+ '/page/' + str(page)
@@ -77,7 +75,7 @@ for idx in url_df.index:
                 continue
 
             if( sum(['gps' in i.lower() for i in exif.keys()]) > 0):
-                print '\tGPS info found: ',img_url
+                print '\tGPS info found: '
                 try:
                     lat = (exif['GPSInfo'][2][0][0]/float(exif['GPSInfo'][2][0][1]) + exif['GPSInfo'][2][1][0]/float(exif['GPSInfo'][2][1][1])/60 +  exif['GPSInfo'][2][2][0]/float(exif['GPSInfo'][2][2][1])/3600.) * {True: -1, False: 1}[exif['GPSInfo'][1] == 'S']
                     lon = (exif['GPSInfo'][4][0][0]/float(exif['GPSInfo'][4][0][1]) + exif['GPSInfo'][4][1][0]/float(exif['GPSInfo'][4][1][1])/60 +  exif['GPSInfo'][4][2][0]/float(exif['GPSInfo'][4][2][1])/3600.) * {True: -1, False: 1}[exif['GPSInfo'][3] == 'W']
