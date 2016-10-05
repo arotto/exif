@@ -17,7 +17,7 @@ from py_bing_search import PyBingWebSearch
 
 warnings.filterwarnings("ignore")
 
-LANG = 'es' #for example, grab the spanish corpus
+LANG = 'en' #for example, grab the spanish corpus
 
 my_key = 'fake_key'  #THIS IS WHERE YOUR BING SEARCH API KEY GOES
 
