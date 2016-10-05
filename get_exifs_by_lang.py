@@ -15,7 +15,6 @@ warnings.filterwarnings("ignore")
 
 socket.setdefaulttimeout(2)
 
-
  
 LANG = sys.argv[1]
 
