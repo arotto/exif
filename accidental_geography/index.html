@@ -1,0 +1,301 @@
+<html>
+<head>
+<meta charset=utf-8 />
+<title>accidental geography</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<meta name="google" content="notranslate" />
+
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.js'></script>
+ <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.css' rel='stylesheet' />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+
+</head>
+<body>
+
+<style>
+ body { margin:0; padding:0; }
+ #map { position:absolute; top:0; bottom:0; width:100%; height:100%;}
+
+    .about-box {
+	position: absolute;
+	font-name: Helvetica, sans-serif;
+    top: 0px;
+    left:0px;
+    width: 200px;
+    font-size:22px;
+    line-height:120%;
+    color:blue;
+    opacity:0.8;
+    text-align: left;
+    padding: 5px;
+    }
+
+    .random-box {
+	position: absolute;
+    bottom: 0px;
+	left:0px;
+    width: 400px;
+    bottom: 20px;
+    font-size:26px;
+    color:blue;
+    text-align: right;
+    padding: 5px;
+    }
+
+
+   .mapboxgl-popup {
+       max-width: 700px;
+       font: 13px/20px 'Helvetica Neue', Helvetica, sans-serif;
+   }
+
+    .mapboxgl-popup-close-button{
+       font-size:24px;
+        z-index:3;
+       font-weight:bold;
+       color:red;
+ }
+
+    .marker-title {
+        font-weight: 700;
+    }
+
+    .wait{
+       padding:200px;
+       height:100%;
+       text-align:center;
+       font: 32px 'Helvetica', Arial, Helvetica, sans-serif;
+       visibility:visible;
+      }
+
+
+</style>
+<div id="popUpDiv" style="display:none"> </div>
+
+<div id="wait" class="wait" style="">
+loading...
+</div>
+
+
+<img src="example.png" width="0" height="0" />
+
+<div id='map' height="0" width="0">
+
+
+<div id="about" class="about-box">
+ <a href="#" onClick="showAboutBox()" style="text-decoration: none; color:blue;">
+ About this Map
+ </a>
+<br/>
+ <a href="#" onClick="goToRandomImage()" style="text-decoration: none; color:blue;">
+Random Photo
+ </a>
+</div>
+
+
+
+</div>
+
+
+
+<script>
+
+mapboxgl.accessToken = 'fake_key'; //this is where your mapbox API key goes...
+
+
+function detectmob() {
+   if(window.innerWidth <= 800 && window.innerHeight <= 600) {
+     return true;
+   } else {
+     return false;
+   }
+}
+
+function randrange ( lower, upperbound ) {
+        // Finds a random integer from 'lower' to 'upperbound-1'
+        return Math.floor( Math.random() * upperbound + lower );
+}
+
+function setPopupSize(){
+    popup_size =  window.innerHeight/2.5;
+    $style = $("<style type='text/css'>").appendTo('head'); //;max-width:"+(popup_size*1.5)+"px;
+    css = ".mapboxgl-popup {max-height:"+(popup_size+100)+"px;} .mapboxgl-popup-content {max-height:"+(popup_size+100)+"px;max-width:"+(popup_size*1.5)+"px;}";   
+    $style.html(css);
+}
+
+
+
+function showPopup(feature){
+    var temp_width = -1;
+    var newImg = new Image();
+    newImg.onload = function(){
+	console.log(newImg.width, newImg.height);
+	
+	if((newImg.width/newImg.height) < 1.2){
+	    popup_width = popup_size*1.5;
+	    popup_height = popup_size*1.25;
+	} else{
+	    popup_width = popup_size * 1.5;
+	    popup_height = popup_size;
+	}	    
+
+	var popup_content =   '<img align="center" style="max-height:'+popup_height+'px;max-width:'+(popup_width)+'px;" src="http://' + feature.properties.image + '?w='+(popup_width)+'h='+popup_height+'" /><br/>' +
+	    ((feature.properties.desc==="none")? '' :feature.properties.desc.slice(0,popup_width*.6) + '&nbsp;') +  
+	    '[<a target="_blank" style="text-decoration: none; color:blue;" href="http://' + feature.properties.url + '">blog</a>]&nbsp;[<a target="_blank" style="text-decoration: none; color:blue;" href="http://'+feature.properties.image+'">fullsize'+ '</a>]</div>'; 
+	
+	popup.setLngLat(feature.geometry.coordinates)
+	    .setHTML(popup_content)  
+	    .addTo(map).on();
+	
+	map.setCenter([feature.geometry.coordinates[0], feature.geometry.coordinates[1]]);
+    }
+    newImg.src = 'http://'+feature.properties.image+'?w=20';
+
+}
+
+function goToRandomImage(){
+    rand_lat = randrange(-50,100); 
+    rand_lon = randrange(-180,360); 
+    
+    sw_bound = map.getBounds().getSouthWest();
+    ne_bound = map.getBounds().getNorthEast();
+
+    rand_index = randrange(0, wordpress_items.length);
+	    
+    feature = wordpress_items[rand_index];
+    showPopup(feature);
+ 
+    map.setZoom(7);
+}
+
+function showAboutBox(){
+    sw_bound = map.getBounds().getSouthWest();
+    ne_bound = map.getBounds().getNorthEast();
+
+   var popup_content =  '<div style="width:'+popup_size + 'px;padding:10px;"><span style="font-size:24px;font-weight:bold;">accidental geography</span><br/> <small>by ross otto [<a href="https://twitter.com/arossotto">@arossotto</a>] <nobr>firstname dot lastname at gmail dot com</nobr></small><p>Wordpress is a popular blogging platform used nearly everywhere in the world.<p> This map depicts the locations of photos unwittingly geo-tagged by Wordpress users\' cameras and phones and subsequently posted to Wordpress blogs.<p>You can view photos by clicking on points on the map. As you navigate around the world, you will see that more points become visible as you zoom in on areas dense with points.';	
+
+    if(detectmob()){
+	popup_content = popup_content.concat('<p><strong>This is best viewed with a desktop or tablet!</strong>');
+    }
+
+    
+    popup.setLngLat(map.getCenter())
+	.setHTML(popup_content)  
+	.addTo(map).on();
+
+    child = document.getElementsByClassName('mapboxgl-popup-tip')[0];
+    parent = child.parentNode;
+    parent.removeChild(child);
+}
+
+try{
+    var map = new mapboxgl.Map({
+	container: 'map', // container id
+	style: 'mapbox://styles/mapbox/light-v8', //stylesheet location
+	center: [-74.50, 40], // starting position
+	minZoom: 2,
+	zoom: 3 // starting zoom
+    });
+} catch (err) {
+    alert('This page requires WebGL to render correctly. Please enable WebGL on your browswer.');    
+}
+
+
+document.body.appendChild(document.createElement("script")).src = 'wordpress_items.js';
+
+
+var about = document.getElementById('about');
+var random = document.getElementById('random');
+
+var popup = new mapboxgl.Popup();
+var popup_size;
+
+function waitForElement(){
+    if(typeof wordpress_items !== "undefined"){
+
+	console.log('done...');
+	    map.addSource("markers", {
+		"type": "geojson",
+		"data": {
+		    "type": "FeatureCollection",
+		    "features": wordpress_items}});
+
+	    map.addLayer({
+		"id": "markers",
+		"interactive": true,
+		"type": "symbol",
+		"source": "markers",
+		"layout": {
+		    "icon-image": "circle-15"}, 
+		"paint": {}
+	    });
+
+	    map.addControl(new mapboxgl.Navigation());
+
+	    about.setAttribute("visibility","visible");
+	    about.style.zIndex = 9999;
+	    setPopupSize();
+
+	    child = document.getElementsByClassName('wait')[0];
+	    parent = child.parentNode;
+	    parent.removeChild(child);
+
+	    goToRandomImage();
+
+
+    } else{
+	console.log('waiting...');
+        setTimeout(waitForElement,500);
+    }
+}
+
+
+
+
+map.on('style.load', function () {
+    waitForElement();
+});
+
+
+map.on('click', function (e) {
+    map.featuresAt(e.point, {
+        radius: 20,
+        includeGeometry: true,
+        layer: 'markers'
+    }, function (err, features) {
+
+        if (err || !features.length) {
+            popup.remove();
+            return;
+        }
+
+        var feature = features[0];
+
+         showPopup(feature);
+	map.panTo([feature.geometry.coordinates[0], feature.geometry.coordinates[1]], {duration:750});
+    });
+});
+
+
+
+map.on('mousemove', function (e) {
+    map.featuresAt(e.point, {
+        radius: 20, // Half the marker size (15px).
+        layer: 'markers'
+    }, function (err, features) {
+        map.getCanvas().style.cursor = (!err && features.length) ? 'pointer' : '';
+    });
+});
+
+
+
+window.addEventListener("resize", setPopupSize);
+
+</script>
+
+
+
+
+</body>
+</html>
