@@ -57,7 +57,7 @@ for word in words[0:500]:
 
     bing = BingSearchAPI(my_key)
 
-    for i in [0]: #range(0, 50): #range(253,1000): #range(253,760000):
+    for i in range(0, 50): 
         params = { '$format': 'json',              '$top': 50,              '$skip': i*50}
 
         try:
